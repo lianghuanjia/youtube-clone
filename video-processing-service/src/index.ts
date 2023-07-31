@@ -1,6 +1,6 @@
 import express from "express";
 
-import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedvideo } from "./storage";
+import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo } from "./storage";
 
 setupDirectories();
 
@@ -26,10 +26,10 @@ app.post("/process-video", async (req, res) => {
 
     const inputFileName = data.name;
     const outputFileName =  `processed-${inputFileName}`;
-
+    console.log("------About to download the raw video")
     // Download the raw video from Cloud Storage
     await downloadRawVideo(inputFileName);
-
+    console.log("------Finished downloading raw video")
     // Convert the video to 360p
     try{
         await convertVideo(inputFileName, outputFileName);
@@ -41,20 +41,23 @@ app.post("/process-video", async (req, res) => {
             deleteProcessedVideo(outputFileName)
         ]);
         console.error(err);
+        console.error("------Failed processing video")
         return res.status(500).send('Internal Server Error: video processing failed.');
     }
 
+    console.log("------Video finished processing.")
 
     // Upload the processed video to Cloud Storage
-    await uploadProcessedvideo(outputFileName);
+    await uploadProcessedVideo(outputFileName);
 
+    console.log("------Finished uploading processed video to GCP bucket.")
     // After uploading the processed video, we need to clean up the local raw and processed video.
     await Promise.all([
         deleteRawVideo(inputFileName),
         deleteProcessedVideo(outputFileName)
     ]);
 
-    return res.status(200).send('Processing finished successfully.');
+    return res.status(200).send('------Whole process is finished.');
 
 });
 
