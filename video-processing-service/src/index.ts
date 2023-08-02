@@ -1,6 +1,7 @@
 import express from "express";
 
 import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo } from "./storage";
+import { isVideoNew, setVideo } from "./firestore";
 
 setupDirectories();
 
@@ -24,11 +25,30 @@ app.post("/process-video", async (req, res) => {
         return res.status(400).send('Bad Request: missing filename.');
     }
 
-    const inputFileName = data.name;
+    const inputFileName = data.name; // Format of <UID>-<DATE>.<EXTENSION>
     const outputFileName =  `processed-${inputFileName}`;
-    console.log("------About to download the raw video")
+    const videoId = inputFileName.split('.')[0];
+
+    if (!isVideoNew(videoId)) {
+        return res.status(400).send('Bad Request: video already processing or processed');
+    } else {
+        await setVideo(videoId, {
+            id: videoId,
+            uid: videoId.split('-')[0],
+            status: 'processing'
+        });
+    }
+
     // Download the raw video from Cloud Storage
+    console.log("------About to download the raw video")
     await downloadRawVideo(inputFileName);
+
+    // Update the video's status in the firestore to indicate that it is processed.
+    await setVideo(videoId, {
+        status: 'processed',
+        filename: outputFileName
+    });
+
     console.log("------Finished downloading raw video")
     // Convert the video to 360p
     try{
@@ -57,6 +77,7 @@ app.post("/process-video", async (req, res) => {
         deleteProcessedVideo(outputFileName)
     ]);
 
+    console.log("------Whole process is finished.");
     return res.status(200).send('------Whole process is finished.');
 
 });
