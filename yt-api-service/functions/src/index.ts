@@ -14,6 +14,18 @@ const storage = new Storage();
 
 const rawVideoBucketName = "hjl-yt-clone-raw-videos";
 
+// TO DO: put the videoCollectionId and the Video
+// interface to a seperate file, like a config file.
+const videoCollectionId = "videos";
+
+export interface Video {
+    id?: string,
+    uid?: string,
+    filename?: string,
+    status?: "processing" | "processed",
+    title?: string,
+    description?: string
+}
 /**
  *
  */
@@ -58,5 +70,17 @@ export const generateUploadUrl = onCall( {maxInstances: 1}, async (request) => {
         // Starting from now, the signed URL is valid for 15 minutes.
     });
     return {url, fileName};
+});
+
+
+/**
+ * So much optimization on this method and there are
+ * potential bugs on this function.
+ * @returns 10 documents from the firestore.
+ */
+export const getVideos = onCall({maxInstances: 1}, async () => {
+    const snapshot =
+        await firestore.collection(videoCollectionId).limit(10).get();
+    return snapshot.docs.map((doc) => doc.data());
 });
 
