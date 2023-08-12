@@ -30,7 +30,7 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
       run: 
-        build docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client ./yt-web-client/Dockerfile
+        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client ./yt-web-client/Dockerfile
     
     - name: push newly built docker image to GCP artifact repository
       env:
