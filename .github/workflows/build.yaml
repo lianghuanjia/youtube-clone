@@ -20,12 +20,22 @@ jobs:
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         export_default_credentials: true
 
-    - name: build and push the docker image
+    - name: authenticate GCP
       env:
         GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
       run:
         gcloud auth configure-docker us-central1-docker.pkg.dev
-        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client ./yt-web-client/Dockerfile
+        
+    - name: build docker image
+      env:
+        GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
+      run: 
+        build docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client ./yt-web-client/Dockerfile
+    
+    - name: push newly built docker image to GCP artifact repository
+      env:
+          GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
+      run:
         docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client
       
 
