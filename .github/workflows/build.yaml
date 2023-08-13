@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT_ID: clone-a764f
-  SERVICE: yt-web-client-repo/yt-web-client
+  SERVICE: automation-test
   REGION: us-central1
   GAR_LOCATION: us-central1
 
@@ -53,6 +53,6 @@ jobs:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
         # NOTE: If using a pre-built image, update the image name here
-        image: us-central1-docker.pkg.dev/clone-a764f/yt-web-client-repo/yt-web-client:latest
+        image: us-central1-docker.pkg.dev/clone-a764f/automation-test:latest
 
       
