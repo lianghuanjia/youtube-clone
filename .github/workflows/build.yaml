@@ -5,6 +5,14 @@ on:
     branches:
     - 'main'
 
+
+env:
+  PROJECT_ID: clone-a764f
+  SERVICE: yt-web-client-repo/yt-web-client
+  REGION: us-central1
+  GAR_LOCATION: us-central1
+
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -39,17 +47,12 @@ jobs:
         docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:latest
     
     - name: Deploy to Cloud Run
-      env:
-        GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
+        service: ${{ env.SERVICE }}
+        region: ${{ env.REGION }}
         # NOTE: If using a pre-built image, update the image name here
-        image: us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:latest
+        image: us-central1-docker.pkg.dev/clone-a764f/yt-web-client-repo/yt-web-client:latest
 
-      # If required, use the Cloud Run url output in later steps
-    - name: Show Output
-      run: echo ${{ steps.deploy.outputs.url }}
       
-
-    
