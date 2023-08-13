@@ -38,13 +38,13 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
       run: 
-        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:latest ./yt-web-client
+        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:$GITHUB_SHA ./yt-web-client
     
     - name: push newly built docker image to GCP artifact repository
       env:
           GOOGLE_PROJECT: ${{ SECRETS.GOOGLE_PROJECT }}
       run:
-        docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:latest
+        docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/yt-web-client-repo/yt-web-client:$GITHUB_SHA
     
     - name: Deploy to Cloud Run
       id: deploy
@@ -52,6 +52,6 @@ jobs:
       with:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
-        image: us-central1-docker.pkg.dev/clone-a764f/automation-test:latest
+        image: us-central1-docker.pkg.dev/clone-a764f/automation-test:$GITHUB_SHA
 
       
