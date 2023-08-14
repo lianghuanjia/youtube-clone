@@ -52,6 +52,6 @@ jobs:
       with:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
-        image: us-central1-docker.pkg.dev/clone-a764f/automation-test:latest
+        image: us-central1-docker.pkg.dev/clone-a764f/yt-web-client-repo/yt-web-client:latest
 
       
